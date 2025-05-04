@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
 import KnowMore from "./pages/KnowMore";
 import UserLogin from "./pages/UserLogin";
+import UserRegister from "./pages/UserRegister";
 
 import Testing from "./pages/Testing";
 
@@ -68,13 +69,14 @@ function App() {
         <BrowserRouter>
           <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-indigo-50">
             <ScrollToTop />
-            <Navbar />
+           
 
             <main className="flex-grow">
               <Routes>
                 <Route path="/testing" element={<Testing />} />{" "}
                 {/* Testing route */}
                 <Route path="/" element={<UserLogin />} />
+                <Route path="/signup" element={<UserRegister />} />
                 <Route path="/user-home" element={<Home />} />
                 <Route path="/shops" element={<AllShopsPage />} />
                 <Route path="/shop/:shopId" element={<ShopPage />} />

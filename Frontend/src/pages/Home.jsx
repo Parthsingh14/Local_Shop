@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { shops } from "../data/shop";
+import Navbar from "../components/Navbar";
 
 const heroBg =
   "https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80";
@@ -35,6 +36,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F8F5F0]">
+      {/* Navbar Component */}
+      <Navbar />
       {/* Hero Section */}
       <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
         <div
