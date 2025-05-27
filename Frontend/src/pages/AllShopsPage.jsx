@@ -1,20 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { shops } from '../data/shop';
 import { FiSearch, FiArrowLeft } from 'react-icons/fi';
+import { shops as shopsData } from "../data/shop";
 
 export default function AllShopsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const navigate = useNavigate();
 
-  // Get unique categories
-  const categories = ['all', ...new Set(shops.map(shop => shop.category))];
+  // Get unique categories from shops data
+  const categories = ['all', ...new Set(
+    shopsData.map(shop => shop.category).filter(Boolean)
+  )];
 
   // Filter shops based on search and category
-  const filteredShops = shops.filter(shop => {
+  const filteredShops = shopsData.filter(shop => {
     const matchesSearch = shop.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         shop.owner.toLowerCase().includes(searchQuery.toLowerCase());
+                         (shop.owner?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
     const matchesCategory = activeCategory === 'all' || shop.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -49,21 +51,23 @@ export default function AllShopsPage() {
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap gap-3">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                activeCategory === category 
-                  ? 'bg-[#1A2A4F] text-[#F8F5F0] shadow-md' 
-                  : 'bg-white text-[#5A5A5A] hover:bg-[#E0E0E0]/50 border border-[#E0E0E0]'
-              }`}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </button>
-          ))}
-        </div>
+        {categories.length > 1 && (
+          <div className="flex flex-wrap gap-3">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  activeCategory === category 
+                    ? 'bg-[#1A2A4F] text-[#F8F5F0] shadow-md' 
+                    : 'bg-white text-[#5A5A5A] hover:bg-[#E0E0E0]/50 border border-[#E0E0E0]'
+                }`}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Shops Grid */}
@@ -78,28 +82,34 @@ export default function AllShopsPage() {
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={shop.image}
+                    src={shop.image || 'https://via.placeholder.com/400x300?text=Shop+Image'}
                     alt={shop.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                     <h3 className="text-xl font-bold text-white">{shop.name}</h3>
-                    <p className="text-white/90 font-light">{shop.owner}</p>
+                    <p className="text-white/90 font-light">{shop.owner || 'Shop Owner'}</p>
                   </div>
                 </div>
                 <div className="p-5">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#F8F5F0] text-[#1A2A4F] border border-[#E0E0E0]">
-                      {shop.category}
-                    </span>
-                    <div className="flex items-center">
-                      <span className="text-[#D2B66A]">★</span>
-                      <span className="ml-1 text-[#5A5A5A]">{shop.rating}</span>
+                  {shop.category && (
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#F8F5F0] text-[#1A2A4F] border border-[#E0E0E0]">
+                        {shop.category}
+                      </span>
+                      <div className="flex items-center">
+                        <span className="text-[#D2B66A]">★</span>
+                        <span className="ml-1 text-[#5A5A5A]">{shop.rating || 'New'}</span>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-[#5A5A5A] font-light line-clamp-2 mb-4">{shop.description}</p>
+                  )}
+                  <p className="text-[#5A5A5A] font-light line-clamp-2 mb-4">
+                    {shop.description || 'No description available'}
+                  </p>
                   <div className="flex justify-between items-center pt-3 border-t border-[#E0E0E0]/50">
-                    <span className="text-sm text-[#5A5A5A]">{shop.deliveryTime}</span>
+                    <span className="text-sm text-[#5A5A5A]">
+                      {shop.deliveryTime || 'Delivery time not specified'}
+                    </span>
                     <button className="text-[#1A2A4F] hover:text-[#2A3A5F] font-medium flex items-center group">
                       View Shop
                       <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
@@ -111,17 +121,26 @@ export default function AllShopsPage() {
           </div>
         ) : (
           <div className="text-center py-16 bg-white rounded-xl shadow-sm max-w-2xl mx-auto">
-            <h3 className="text-xl font-medium text-[#1A2A4F]">No shops found</h3>
-            <p className="text-[#5A5A5A] mt-3 font-light">Try adjusting your search or filters</p>
-            <button 
-              onClick={() => {
-                setSearchQuery('');
-                setActiveCategory('all');
-              }}
-              className="mt-6 px-6 py-2.5 bg-[#1A2A4F] text-[#F8F5F0] rounded-lg hover:bg-[#2A3A5F] transition-colors font-medium"
-            >
-              Reset Filters
-            </button>
+            {shopsData.length === 0 ? (
+              <>
+                <h3 className="text-xl font-medium text-[#1A2A4F]">No shops registered yet</h3>
+                <p className="text-[#5A5A5A] mt-3 font-light">Be the first to register your shop!</p>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-medium text-[#1A2A4F]">No shops found</h3>
+                <p className="text-[#5A5A5A] mt-3 font-light">Try adjusting your search or filters</p>
+                <button 
+                  onClick={() => {
+                    setSearchQuery('');
+                    setActiveCategory('all');
+                  }}
+                  className="mt-6 px-6 py-2.5 bg-[#1A2A4F] text-[#F8F5F0] rounded-lg hover:bg-[#2A3A5F] transition-colors font-medium"
+                >
+                  Reset Filters
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>

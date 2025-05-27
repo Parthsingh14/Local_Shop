@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiShoppingCart, FiTrash2, FiPlus, FiMinus, FiChevronLeft, FiX } from 'react-icons/fi';
+import { FiShoppingCart, FiTrash2, FiPlus, FiMinus, FiChevronLeft } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 
 export default function Cart() {
@@ -15,122 +15,22 @@ export default function Cart() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [activePaymentMethod, setActivePaymentMethod] = useState(null);
-  const [paymentForm, setPaymentForm] = useState({
-    upiId: '',
-    cardNumber: '',
-    expiry: '',
-    cvv: ''
-  });
+  const [orderId, setOrderId] = useState(null);
+
+  const generateOrderId = () => {
+    return `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  };
 
   const handlePlaceOrder = () => {
     setIsProcessing(true);
+    // Simulate processing delay
     setTimeout(() => {
+      const newOrderId = generateOrderId();
+      setOrderId(newOrderId);
       setIsProcessing(false);
       setOrderPlaced(true);
       clearCart();
-    }, 2000);
-  };
-
-  const handlePaymentSubmit = (e) => {
-    e.preventDefault();
-    setActivePaymentMethod(null);
-    handlePlaceOrder();
-  };
-
-  const renderPaymentPopup = () => {
-    switch (activePaymentMethod) {
-      case 'upi':
-        return (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl max-w-md w-full p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-[#1A2A4F]">UPI Payment</h3>
-                <button onClick={() => setActivePaymentMethod(null)} className="text-[#5A5A5A] hover:text-[#1A2A4F]">
-                  <FiX size={24} />
-                </button>
-              </div>
-              <form onSubmit={handlePaymentSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[#1A2A4F] mb-1">UPI ID</label>
-                  <input
-                    type="text"
-                    placeholder="yourname@upi"
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-md focus:ring-[#1A2A4F] focus:border-[#1A2A4F]"
-                    value={paymentForm.upiId}
-                    onChange={(e) => setPaymentForm({...paymentForm, upiId: e.target.value})}
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 px-4 bg-[#1A2A4F] text-[#F8F5F0] rounded-lg hover:bg-[#2A3A5F]"
-                >
-                  Pay ₹{cartTotal}
-                </button>
-              </form>
-            </div>
-          </div>
-        );
-      case 'card':
-        return (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl max-w-md w-full p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-[#1A2A4F]">Card Payment</h3>
-                <button onClick={() => setActivePaymentMethod(null)} className="text-[#5A5A5A] hover:text-[#1A2A4F]">
-                  <FiX size={24} />
-                </button>
-              </div>
-              <form onSubmit={handlePaymentSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[#1A2A4F] mb-1">Card Number</label>
-                  <input
-                    type="text"
-                    placeholder="1234 5678 9012 3456"
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-md focus:ring-[#1A2A4F] focus:border-[#1A2A4F]"
-                    value={paymentForm.cardNumber}
-                    onChange={(e) => setPaymentForm({...paymentForm, cardNumber: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#1A2A4F] mb-1">Expiry</label>
-                    <input
-                      type="text"
-                      placeholder="MM/YY"
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-md focus:ring-[#1A2A4F] focus:border-[#1A2A4F]"
-                      value={paymentForm.expiry}
-                      onChange={(e) => setPaymentForm({...paymentForm, expiry: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#1A2A4F] mb-1">CVV</label>
-                    <input
-                      type="text"
-                      placeholder="123"
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-md focus:ring-[#1A2A4F] focus:border-[#1A2A4F]"
-                      value={paymentForm.cvv}
-                      onChange={(e) => setPaymentForm({...paymentForm, cvv: e.target.value})}
-                      required
-                    />
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 px-4 bg-[#1A2A4F] text-[#F8F5F0] rounded-lg hover:bg-[#2A3A5F]"
-                >
-                  Pay ₹{cartTotal}
-                </button>
-              </form>
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
+    }, 1500);
   };
 
   if (orderPlaced) {
@@ -144,15 +44,15 @@ export default function Cart() {
           </div>
           <h2 className="text-2xl font-bold text-[#1A2A4F] mb-2">Order Confirmed!</h2>
           <p className="text-[#5A5A5A] font-light mb-6">
-            Your payment was successful. Your items are being packed at the store.
+            Your order has been placed successfully.
           </p>
           <div className="bg-[#F8F5F0] p-4 rounded-lg mb-6 text-left border border-[#E0E0E0]/50">
-            <h3 className="font-medium text-[#1A2A4F] mb-2">Pickup Information</h3>
+            <h3 className="font-medium text-[#1A2A4F] mb-2">Order Details</h3>
             <p className="text-sm text-[#5A5A5A] font-light">
-              • You can collect your order anytime during store hours<br />
-              • Please bring your payment receipt<br />
-              • Order ID: #{Math.floor(Math.random() * 1000000)}<br />
-              • Store: {cartItems[0]?.shopName || 'The Local Shop'}
+              • Order ID: {orderId}<br />
+              • Store: {cartItems[0]?.shopName || 'The Local Shop'}<br />
+              • Total Amount: ₹{cartTotal}<br />
+              • Payment: Pay at store when picking up
             </p>
           </div>
           <Link
@@ -168,8 +68,6 @@ export default function Cart() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {renderPaymentPopup()}
-      
       {/* Cart header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[#1A2A4F] flex items-center">
@@ -257,42 +155,14 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Payment options */}
-            <div className="mt-6">
-              <h3 className="text-sm font-medium text-[#1A2A4F] mb-2">Pay Now, Pickup Later</h3>
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <button 
-                  onClick={() => setActivePaymentMethod('upi')}
-                  className="p-3 border border-[#E0E0E0]/50 rounded-lg hover:border-[#1A2A4F] flex items-center justify-center transition-colors"
-                >
-                  <img 
-                    src="https://cdn-icons-png.flaticon.com/512/179/179457.png" 
-                    alt="UPI" 
-                    className="h-6 mr-2" 
-                  />
-                  UPI
-                </button>
-                <button 
-                  onClick={() => setActivePaymentMethod('card')}
-                  className="p-3 border border-[#E0E0E0]/50 rounded-lg hover:border-[#1A2A4F] flex items-center justify-center transition-colors"
-                >
-                  <img 
-                    src="https://cdn-icons-png.flaticon.com/512/196/196566.png" 
-                    alt="Cards" 
-                    className="h-6 mr-2" 
-                  />
-                  Cards
-                </button>
-              </div>
-
-              <div className="bg-[#F8F5F0] p-4 rounded-lg mb-6 border border-[#E0E0E0]/50">
-                <h4 className="font-medium text-[#1A2A4F] mb-2">Pickup Information</h4>
-                <ul className="text-sm text-[#5A5A5A] font-light list-disc pl-5 space-y-1">
-                  <li>Pay online and collect from {cartItems[0]?.shopName || 'the store'}</li>
-                  <li>No delivery - in-store pickup only</li>
-                  <li>Open 9AM-9PM, 7 days a week</li>
-                </ul>
-              </div>
+            {/* Pickup information */}
+            <div className="bg-[#F8F5F0] p-4 rounded-lg mb-6 border border-[#E0E0E0]/50">
+              <h4 className="font-medium text-[#1A2A4F] mb-2">Pickup Information</h4>
+              <ul className="text-sm text-[#5A5A5A] font-light list-disc pl-5 space-y-1">
+                <li>Pay at the store when picking up your order</li>
+                <li>Show your order confirmation at {cartItems[0]?.shopName || 'the store'}</li>
+                <li>Open 9AM-9PM, 7 days a week</li>
+              </ul>
             </div>
 
             {/* Action buttons */}
@@ -302,6 +172,25 @@ export default function Cart() {
                 className="w-full py-3 px-4 border border-[#E0E0E0]/50 rounded-lg text-[#1A2A4F] hover:bg-[#F8F5F0] transition-colors"
               >
                 Clear Cart
+              </button>
+              <button
+                onClick={handlePlaceOrder}
+                disabled={isProcessing}
+                className={`w-full py-3 px-4 bg-[#1A2A4F] text-[#F8F5F0] rounded-lg hover:bg-[#2A3A5F] transition-colors flex items-center justify-center ${
+                  isProcessing ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
+              >
+                {isProcessing ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  'Place Order'
+                )}
               </button>
             </div>
           </div>

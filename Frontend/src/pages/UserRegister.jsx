@@ -6,6 +6,7 @@ function UserRegister() {
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("customer"); // Default to customer
   const navigate = useNavigate();
 
   const submitHandler = async (e) => {
@@ -14,6 +15,7 @@ function UserRegister() {
       username,
       email,
       password,
+      role // Include role in registration
     };
   
     try {
@@ -25,16 +27,19 @@ function UserRegister() {
       const data = response.data;
       console.log(data);
       localStorage.setItem("token", data.token);
-      navigate("/");
+      
+      // Redirect based on role
+      if (data.user.role === 'shopkeeper') {
+        navigate('/shop-setup'); // Redirect to shop setup page
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       if (error.response) {
-        // The request was made and the server responded with a status code outside 2xx
         console.error("Registration failed:", error.response.data);
       } else if (error.request) {
-        // The request was made but no response received
         console.error("No response from server:", error.request);
       } else {
-        // Something else happened
         console.error("Error:", error.message);
       }
     }
@@ -43,7 +48,6 @@ function UserRegister() {
     setPassword("");
     setUserName("");
   };
-  
 
   return (
     <div className="min-h-screen bg-[#F8F5F0] flex items-center justify-center p-4">
@@ -102,6 +106,37 @@ function UserRegister() {
             />
           </div>
 
+          {/* Role Selection */}
+          <div>
+            <label className="block text-sm font-medium text-[#5A5A5A] mb-2">
+              Register as:
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="role"
+                  value="customer"
+                  checked={role === "customer"}
+                  onChange={() => setRole("customer")}
+                  className="h-4 w-4 text-[#1A2A4F] focus:ring-[#1A2A4F]"
+                />
+                <span>Customer</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="role"
+                  value="shopkeeper"
+                  checked={role === "shopkeeper"}
+                  onChange={() => setRole("shopkeeper")}
+                  className="h-4 w-4 text-[#1A2A4F] focus:ring-[#1A2A4F]"
+                />
+                <span>Shopkeeper</span>
+              </label>
+            </div>
+          </div>
+
           <button
             type="submit"
             className="w-full bg-[#1A2A4F] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#1A2A4F]/90 transition-colors duration-200 shadow-md"
@@ -122,7 +157,7 @@ function UserRegister() {
           </div>
         </form>
 
-        {/* Footer with copyright and terms */}
+        {/* Footer remains the same */}
         <div className="mt-8 pt-6 border-t border-[#1A2A4F]/10 text-xs text-[#5A5A5A] text-center">
           <p>© {new Date().getFullYear()} Local-Shop. All rights reserved.</p>
           <p className="mt-2">

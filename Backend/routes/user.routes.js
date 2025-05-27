@@ -14,4 +14,6 @@ router.post("/register",[
     body("password").isLength({min: 6}).withMessage("Password must be at least 6 characters long.")
 ],userController.registerUser);
 
+router.get("/get-all-users", userController.getUsersByRole);
+
 module.exports = router;
