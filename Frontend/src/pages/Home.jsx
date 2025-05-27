@@ -180,7 +180,7 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2A4F] mb-4">
-            Meet Our Artisans
+            Meet The Shop-Owners
           </h2>
           <div className="w-24 h-1 bg-[#1A2A4F] mx-auto mb-6"></div>
           <p className="text-[#5A5A5A] max-w-2xl mx-auto text-lg">
